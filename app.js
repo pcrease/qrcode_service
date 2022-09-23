@@ -1,8 +1,72 @@
 const express = require("express");
 const app = express();
 const port = process.env.PORT || 3001;
+const qrcode_generator = require('./qrcode_generator');
+const url_handler = require('url');
+var fs = require('fs');
+const multer = require('multer');
+const os = require('os')
+const upload = multer({ dest: "/tmp" });
+var path = require('path');
+
+app.use('/test', (req, res, next) => {
+    console.log('Times: ', Date.now());
+    //qrcode_generator.create_qrcode()
+    next();
+});
+
+app.get('/health', (req, res) => {
+    res.send('Successful response.');
+});
 
 app.get("/", (req, res) => res.type('html').send(html));
+
+
+app.get('/get_qrcode', async(request, response) => {
+    try {
+        var query = url_handler.parse(request.url, true).query;
+        svg_data = await qrcode_generator.create_qrcode_svg(query)
+        response.setHeader('Content-Type', 'image/svg+xml');
+        response.end(svg_data);
+    } catch (error) {
+        console.log(error)
+    }
+});
+
+
+app.post('/upload_logo_image', upload.single('file'), (request, response) => {
+    try {
+        var file = request.file;
+        var filename = request.body.required_filename
+        var prefix = request.body.prefix
+        extension = path.extname(file.originalname)
+
+        fs.readFile(request.file.path, async function(err, data) {
+            if (err) throw err;
+            const logo_link = await qrcode_generator.upload_logo_image_to_s3(prefix, filename, extension, data)
+
+            fs.unlink(file.path, function(err) {
+                if (err) {
+                    console.error(err);
+                }
+                console.log('Temp File Delete');
+            });
+            console.log('Successfully uploaded data');
+            response.setHeader('Content-Type', 'application/json');
+            response.end(JSON.stringify({ logo_link: logo_link }));
+
+        });
+    } catch (error) {
+        fs.unlink(file.path, function(err) {
+            if (err) {
+                console.error(err);
+            }
+            console.log('Temp File Delete');
+        });
+        console.log(error)
+    }
+});
+
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));
 

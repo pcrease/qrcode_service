@@ -1,0 +1,13 @@
+<svg style="max-width:96px;height:auto" width="500" height="500" viewBox="0 0 500 500" version="1.1" xmlns="http://www.w3.org/2000/svg">
+    <rect x="0" y="0" width="500" height="500" stroke="black" fill="white" stroke-width="20" />
+    <text x="50%" y="10%" font-family="Arial, Helvetica, sans-serif" font-size="50px" dominant-baseline="middle" text-anchor="middle">{{ header }}</text>
+    <g transform="translate(30, 400)">
+     <text font-family="Arial, Helvetica, sans-serif" font-size="20px" text-anchor="start" transform="rotate(270)">CODE:{{ code }}</text>
+    </g>
+    <image height="375" width="375" x="62" y="75" href="/get_qrcode?width=350&amp;height=350&amp;data=www.google.com&amp;dots_color=000000&amp;dots_type=rounded&amp;background_color=ffffff&amp;image_margin=10" />
+    <image height="100" width="100" x="200" y="200" href="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg"/>
+    <text x="50%" y="95%" font-family="Arial, Helvetica, sans-serif" font-size="30px" dominant-baseline="middle" text-anchor="middle">{{ footer }}</text>
+    <g transform="translate(470, 130)">
+     <text font-family="Arial, Helvetica, sans-serif" font-size="30px" text-anchor="start" transform="rotate(90)">by postmess.com</text>
+    </g>
+</svg>

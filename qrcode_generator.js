@@ -7,6 +7,7 @@ var crypto = require('crypto');
 const aws = require('aws-sdk');
 var path = require('path');
 const { stringify } = require("querystring");
+const nunjucks = require('nunjucks')
 
 const s3 = new aws.S3({
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -155,10 +156,17 @@ module.exports = {
             // .then((buffer) => {
             //     console.log(buffer.toString());
             // })
+
         return svg_data.toString()
+    },
+
+    render_qrcode_from_template: async function(request) {
+
+        template_variables = {
+            header: request.header,
+            footer: request.footer,
+            code: request.code
+        }
+        return nunjucks.render('qrcode_card_template.svg', template_variables);
     }
-
-    // get_logo_image: async function(request) {
-
-    // }
 }

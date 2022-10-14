@@ -8,6 +8,8 @@ const multer = require('multer');
 const os = require('os')
 const upload = multer({ dest: "/tmp" });
 var path = require('path');
+const nunjucks = require('nunjucks')
+nunjucks.configure('./templates', { autoescape: true });
 
 app.use('/test', (req, res, next) => {
     console.log('Times: ', Date.now());
@@ -21,11 +23,45 @@ app.get('/health', (req, res) => {
 
 app.get("/", (req, res) => res.type('html').send(html));
 
+app.get("/get_qrcode_styled", (request, response) => {
+    svg = nunjucks.render('qrcode_card_template.svg', { footer: 'it hddas worked!' });
+    response.writeHeader(200, { "Content-Type": "image/svg+xml" });
+    response.write(svg);
+    response.end();
+    // fs.readFile('./templates/qrcode_card.svg', function(err, html) {
+    //     if (err) {
+    //         throw err;
+    //     }
+    //     response.writeHeader(200, { "Content-Type": "image/svg+xml" });
+    //     response.write(html);
+    //     response.end();
+    // });
+});
+
+app.get("/get_qrcode_template_styled", async(request, response) => {
+    query = url_handler.parse(request.url, true).query;
+    svg = await qrcode_generator.render_qrcode_from_template(query)
+    response.writeHeader(200, { "Content-Type": "image/svg+xml" });
+    response.write(svg);
+    response.end();
+});
 
 app.get('/get_qrcode', async(request, response) => {
     try {
         var query = url_handler.parse(request.url, true).query;
         svg_data = await qrcode_generator.create_qrcode_svg(query)
+        response.setHeader('Content-Type', 'image/svg+xml');
+        response.end(svg_data);
+    } catch (error) {
+        console.log(error)
+    }
+});
+
+
+app.get('/get_default_qrcode', async(request, response) => {
+    try {
+        var query = url_handler.parse(request.url, true).query;
+        svg_data = await qrcode_generator.create_default_qrcode(query)
         response.setHeader('Content-Type', 'image/svg+xml');
         response.end(svg_data);
     } catch (error) {
